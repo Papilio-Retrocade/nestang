@@ -9,6 +9,9 @@
 #
 # Output: impl/pnr/nestang_papilioarcade.fs
 
+# Change to the directory containing this script so relative paths work correctly
+cd [file dirname [file normalize [info script]]]
+
 set_device GW2A-LV18PG256C8/I7 -device_version C
 
 # Board config: defines PAPILIO_ARCADE, MCU_BL616, RES_720P, PLL_R, LED2, configPackage
@@ -29,6 +32,7 @@ add_file -type verilog "src/misc/hid.v"
 add_file -type verilog "src/misc/sysctrl.v"
 add_file -type verilog "src/misc/sd_card.v"
 add_file -type verilog "src/misc/sdcmd_ctrl.v"
+add_file -type verilog "src/gowin_dpb/sector_dpram.v"
 add_file -type verilog "src/misc/sd_rw.v"
 
 # NES core sources (same as other boards)
