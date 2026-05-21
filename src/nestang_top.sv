@@ -384,7 +384,7 @@ nes2hdmi u_hdmi (     // purple: RGB=440064 (010001000_00000000_01100100), BGR5=
 
 // IO system: FPGA Companion SPI (PAPILIO_ARCADE) or BL616 UART
 `ifdef PAPILIO_ARCADE
-iosys_retrocade #(.CORE_ID(8'd1), .FREQ(21_600_000)) sys_inst (
+iosys_retrocade #(.CORE_ID(8'd7), .FREQ(21_600_000)) sys_inst (
     .clk(clk), .hclk(hclk), .resetn(sys_resetn),
     .m0s(m0s),
     .sd_clk(sd_clk), .sd_cmd(sd_cmd), .sd_dat(sd_dat),
