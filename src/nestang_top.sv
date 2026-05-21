@@ -14,9 +14,18 @@ module nestang_top (
     input s1,
     input reset2,
 
-    // UART
+`ifdef PAPILIO_ARCADE
+    // SPI bus to FPGA Companion MCU
+    inout [5:0] m0s,
+    // Physical SD card
+    output sd_clk,
+    inout  sd_cmd,
+    inout  [3:0] sd_dat,
+`else
+    // UART for BL616
     input UART_RXD,
     output UART_TXD,
+`endif
 
     // SDRAM - Tang SDRAM pmod 1.2 for primer 25k, on-chip 32-bit 8MB SDRAM for nano 20k
     output O_sdram_clk,
@@ -373,6 +382,17 @@ nes2hdmi u_hdmi (     // purple: RGB=440064 (010001000_00000000_01100100), BGR5=
 );
 
 
+// IO system: FPGA Companion SPI (PAPILIO_ARCADE) or BL616 UART
+`ifdef PAPILIO_ARCADE
+iosys_retrocade #(.CORE_ID(8'd1), .FREQ(21_600_000)) sys_inst (
+    .clk(clk), .hclk(hclk), .resetn(sys_resetn),
+    .m0s(m0s),
+    .sd_clk(sd_clk), .sd_cmd(sd_cmd), .sd_dat(sd_dat),
+    .overlay(overlay), .overlay_x(overlay_x), .overlay_y(overlay_y), .overlay_color(overlay_color),
+    .hid1(hid1), .hid2(hid2),
+    .rom_loading(loading), .rom_do(loader_do), .rom_do_valid(loader_do_valid)
+);
+`else
 // Connect to BL616 companion MCU for sys module for menu, rom loading...
 iosys_bl616 #(.COLOR_LOGO(15'b01100_00000_01000), .FREQ(21_492_000), .CORE_ID(1) )     // purple nestang logo
     sys_inst (
@@ -385,6 +405,7 @@ iosys_bl616 #(.COLOR_LOGO(15'b01100_00000_01000), .FREQ(21_492_000), .CORE_ID(1)
 
     .rom_loading(loading), .rom_do(loader_do), .rom_do_valid(loader_do_valid)
 );
+`endif
 
 // Controller input
 `ifdef CONTROLLER_SNES

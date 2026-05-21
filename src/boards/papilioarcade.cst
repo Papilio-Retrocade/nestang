@@ -1,0 +1,147 @@
+// papilioarcade.cst — Papilio Retrocade pin assignments for nestang
+// GW2A-LV18PG256C8/I7, FPGA Companion (ESP32-S3) SPI iosys
+//
+// Sources (verified working):
+//   Clock/HDMI/SD: A2600Nano/src/a2600_top_retrocade.cst
+//   SDRAM: papilio_retrocade_hardware/cst/Papilio_RetroCade_SDRAM.cst
+//          (DQ10=E16 corrected from master .cst which had duplicate E15)
+//   SPI m0s: snestang/src/papilioarcade/snestang.cst (verified)
+//   HDMI D0_P: P8 (corrected from M6 which is PMOD IOB1)
+
+IO_LOC "sys_clk" H11;        // 27MHz oscillator on Tang Primer 20K module
+IO_PORT "sys_clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;
+
+IO_LOC "s1" T10;             // KEY1 / FPGA_RST button
+IO_PORT "s1" IO_TYPE=LVCMOS33 PULL_MODE=UP BANK_VCCIO=3.3;
+
+// HDMI (verified via A2600Nano retrocade project)
+// For differential pairs: IO_LOC lists both P,N pins; IO_PORT only for _p signal
+IO_LOC "tmds_clk_p" P6,T6;
+IO_PORT "tmds_clk_p" PULL_MODE=NONE IO_TYPE=LVCMOS33D DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "tmds_d_p[0]" P8,T8;
+IO_PORT "tmds_d_p[0]" PULL_MODE=NONE IO_TYPE=LVCMOS33D DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "tmds_d_p[1]" T11,P11;
+IO_PORT "tmds_d_p[1]" PULL_MODE=NONE IO_TYPE=LVCMOS33D DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "tmds_d_p[2]" T12,R11;
+IO_PORT "tmds_d_p[2]" PULL_MODE=NONE IO_TYPE=LVCMOS33D DRIVE=8 BANK_VCCIO=3.3;
+
+// Physical SD card (Retrocade on-board microSD, verified via A2600Nano retrocade)
+IO_LOC "sd_clk" N10;
+IO_PORT "sd_clk" PULL_MODE=UP IO_TYPE=LVCMOS33;
+IO_LOC "sd_cmd" R14;         // MOSI
+IO_PORT "sd_cmd" PULL_MODE=UP IO_TYPE=LVCMOS33;
+IO_LOC "sd_dat[0]" M8;       // MISO
+IO_PORT "sd_dat[0]" PULL_MODE=UP IO_TYPE=LVCMOS33;
+IO_LOC "sd_dat[1]" M7;
+IO_PORT "sd_dat[1]" PULL_MODE=UP IO_TYPE=LVCMOS33;
+IO_LOC "sd_dat[2]" M10;
+IO_PORT "sd_dat[2]" PULL_MODE=UP IO_TYPE=LVCMOS33;
+IO_LOC "sd_dat[3]" N11;      // CS
+IO_PORT "sd_dat[3]" PULL_MODE=UP IO_TYPE=LVCMOS33;
+
+// ESP32 FPGA Companion SPI bus (MSPI pins, use_mspi_as_gpio=1)
+// m0s[0]=MISO, m0s[1]=MOSI, m0s[2]=SS, m0s[3]=CLK, m0s[4]=IRQn, m0s[5]=flash_cs
+IO_LOC "m0s[0]" J11;
+IO_PORT "m0s[0]" IO_TYPE=LVCMOS33;
+IO_LOC "m0s[1]" B11;
+IO_PORT "m0s[1]" IO_TYPE=LVCMOS33;
+IO_LOC "m0s[2]" A12;
+IO_PORT "m0s[2]" IO_TYPE=LVCMOS33;
+IO_LOC "m0s[3]" A11;
+IO_PORT "m0s[3]" IO_TYPE=LVCMOS33;
+IO_LOC "m0s[4]" C11;
+IO_PORT "m0s[4]" IO_TYPE=LVCMOS33;
+IO_LOC "m0s[5]" F10;
+IO_PORT "m0s[5]" IO_TYPE=LVCMOS33;
+
+// SDRAM — Retrocade on-board IS42S16160J-7 (16-bit, 13-row-addr)
+// Source: papilio_retrocade_hardware/cst/Papilio_RetroCade_SDRAM.cst
+// Note: DQ10=E16 (corrected; master .cst had duplicate E15 = same as A9)
+IO_LOC "IO_sdram_dq[0]" K13;
+IO_PORT "IO_sdram_dq[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[1]" K12;
+IO_PORT "IO_sdram_dq[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[2]" K11;
+IO_PORT "IO_sdram_dq[2]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[3]" L13;
+IO_PORT "IO_sdram_dq[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[4]" H15;
+IO_PORT "IO_sdram_dq[4]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[5]" G16;
+IO_PORT "IO_sdram_dq[5]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[6]" H14;
+IO_PORT "IO_sdram_dq[6]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[7]" H16;
+IO_PORT "IO_sdram_dq[7]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[8]" C12;
+IO_PORT "IO_sdram_dq[8]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[9]" B12;
+IO_PORT "IO_sdram_dq[9]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[10]" E16;
+IO_PORT "IO_sdram_dq[10]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[11]" F15;
+IO_PORT "IO_sdram_dq[11]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[12]" D16;
+IO_PORT "IO_sdram_dq[12]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[13]" E10;
+IO_PORT "IO_sdram_dq[13]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[14]" D10;
+IO_PORT "IO_sdram_dq[14]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "IO_sdram_dq[15]" D11;
+IO_PORT "IO_sdram_dq[15]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "O_sdram_addr[0]" N15;
+IO_PORT "O_sdram_addr[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[1]" R16;
+IO_PORT "O_sdram_addr[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[2]" P15;
+IO_PORT "O_sdram_addr[2]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[3]" P16;
+IO_PORT "O_sdram_addr[3]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[4]" H13;
+IO_PORT "O_sdram_addr[4]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[5]" G14;
+IO_PORT "O_sdram_addr[5]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[6]" G15;
+IO_PORT "O_sdram_addr[6]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[7]" F14;
+IO_PORT "O_sdram_addr[7]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[8]" F16;
+IO_PORT "O_sdram_addr[8]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[9]" E15;
+IO_PORT "O_sdram_addr[9]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[10]" N16;
+IO_PORT "O_sdram_addr[10]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[11]" D14;
+IO_PORT "O_sdram_addr[11]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_addr[12]" A15;
+IO_PORT "O_sdram_addr[12]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "O_sdram_ba[0]" L16;
+IO_PORT "O_sdram_ba[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_ba[1]" N14;
+IO_PORT "O_sdram_ba[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "O_sdram_dqm[0]" J15;   // DQML
+IO_PORT "O_sdram_dqm[0]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_dqm[1]" B13;   // DQMH
+IO_PORT "O_sdram_dqm[1]" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+
+IO_LOC "O_sdram_clk" A14;
+IO_PORT "O_sdram_clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_cke" B14;
+IO_PORT "O_sdram_cke" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_wen_n" K16;
+IO_PORT "O_sdram_wen_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_ras_n" K15;
+IO_PORT "O_sdram_ras_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_cas_n" K14;
+IO_PORT "O_sdram_cas_n" IO_TYPE=LVCMOS33 PULL_MODE=NONE;
+IO_LOC "O_sdram_cs_n" T9;
+IO_PORT "O_sdram_cs_n" IO_TYPE=LVCMOS33 PULL_MODE=UP;
+
+// Tang Primer 20K: DONE (C13) and READY (A13) are dedicated config pins.
+// use_done_as_gpio and use_ready_as_gpio are kept=0 (matching A2600Nano retrocade).
+// LED2 is defined in papilioarcade.v but led[1:0] are left unconnected in the CST.
+// IO_LOC "led[1]" A13;    // READY - dedicated pin, kept as config signal
+// IO_LOC "led[0]" C13;    // DONE  - dedicated pin, kept as config signal
