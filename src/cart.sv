@@ -127,6 +127,12 @@ MMC1 mmc1(
 // Notes  : This mapper relies on open bus and bus conflict behavior.          //
 // Games  : Donkey Kong                                                        //
 //*****************************************************************************//
+// Proper fix for nand2mario e9abdad hack (Primer 25K issue #108):
+// Root cause was the `reg [1023:0] me;` + dynamic-index write below being dead-
+// code-eliminated by gowinsynthesis on newer Gowin targets (GW2A-18C, GW5A-25).
+// `me` is now declared as a wire driven by an explicit per-bit generate block
+// (see end of module), so each `me[N]` survives as its own equality compare
+// against `mapper_id`. The hardcoded `mapper28_en = 1'b1` workaround is removed.
 wire mapper28_en = me[0] | me[2] | me[3] | me[7] | me[94] | me[97] | me[180] | me[185] | me[28];
 Mapper28 map28(
 	.clk        (clk),
@@ -1847,12 +1853,22 @@ wire [15:0] vrc6_audio;
 
 reg [6:0] prg_mask;
 reg [6:0] chr_mask;
-reg [1023:0] me;
+
+// Per-bit mapper decoder. Each me[N] is an independent continuous assignment of
+// the form (mapper_id == N), which gowinsynthesis treats as an explicit equality
+// compare and cannot dead-code-eliminate. Unused me[N] bits are pruned naturally
+// (no logic generated), so this is also smaller than the original 1024-bit reg.
+// See cart.sv top of file for context on the e9abdad workaround this replaces.
+wire [9:0] mapper_id = {flags[18:17], flags[7:0]};
+wire [1023:0] me;
+genvar me_i;
+generate
+	for (me_i = 0; me_i < 1024; me_i = me_i + 1) begin : me_decode
+		assign me[me_i] = (mapper_id == me_i[9:0]);
+	end
+endgenerate
 
 always @* begin
-	me = 1023'd0;
-	me[{flags[18:17],flags[7:0]}] = 1'b1;
-
 	case(flags[10:8])
 		0: prg_mask = 7'b0000000;
 		1: prg_mask = 7'b0000001;

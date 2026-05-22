@@ -118,7 +118,12 @@ module NES(
 	output        gg_avail,
 	input         gg_reset,
 	output  [2:0] emphasis,
-	output        save_written
+	output        save_written,
+	// Debug taps (for top-level overlay diagnostics)
+	output [15:0] dbg_addr,
+	output        dbg_mr,
+	output        dbg_mw,
+	output        dbg_cpu_ce
 );
 
 
@@ -448,6 +453,12 @@ wire has_chr_from_ppu_mapper;
 wire [15:0] sample_ext;
 
 assign save_written = (mapper_flags[7:0] == 8'h14) ? (prg_linaddr[21:18] == 4'b1111 && prg_write) : (prg_addr[15:13] == 3'b011 && prg_write) | bram_write;
+
+// Debug taps -- expose CPU bus to top for overlay diagnostics
+assign dbg_addr   = addr;
+assign dbg_mr     = mr_int;
+assign dbg_mw     = mw_int;
+assign dbg_cpu_ce = cpu_ce;
 
 cart_top multi_mapper (
 	// FPGA specific
